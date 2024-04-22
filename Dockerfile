@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION=3.19
-ARG GO_VERSION=1.21
-ARG DOCKER_VERSION=25-git
-ARG BUILDX_VERSION=0.12.1
+ARG GO_VERSION=1.22
+ARG DOCKER_VERSION=26-dind
+ARG BUILDX_VERSION=0.14.0
 
 FROM golang:${GO_VERSION}-alpine as builder
 
@@ -22,6 +22,11 @@ COPY --from=builder /usr/local/go/ /usr/local/go/
 ENV GOROOT /usr/local/go
 ENV GOPATH /go
 ENV PATH /go/bin:/usr/local/go/bin:$PATH
+
+RUN set -eux; \
+	apk add --no-cache \
+		git \
+	;
 
 RUN chmod a+x /usr/lib/docker/cli-plugins/docker-buildx
 RUN chmod a+x /usr/local/go/bin/go
