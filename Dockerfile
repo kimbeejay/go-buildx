@@ -1,10 +1,10 @@
-ARG ALPINE_VERSION=3.20
-ARG GO_VERSION=1.23.1
+ARG ALPINE_VERSION=3.21
+ARG GO_VERSION=1.23.4
 ARG DOCKER_VERSION=27-dind
-ARG BUILDX_VERSION=0.17.1
 
 FROM golang:${GO_VERSION}-alpine as builder
 
+ARG BUILDX_VERSION=0.19.3
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -19,9 +19,14 @@ FROM docker:${DOCKER_VERSION} as final
 COPY --from=builder /docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
 COPY --from=builder /usr/local/go/ /usr/local/go/
 
-ENV GOROOT /usr/local/go
-ENV GOPATH /go
-ENV PATH /go/bin:/usr/local/go/bin:$PATH
+LABEL org.opencontainers.image.source="https://github.com/kimbeejay/go-buildx"
+LABEL org.opencontainers.image.authors="i@beejay.kim"
+LABEL version=$GO_VERSION
+LABEL description="Docker CE client with BuildKit and Golang support"
+
+ENV GOROOT=/usr/local/go
+ENV GOPATH=/go
+ENV PATH=/go/bin:/usr/local/go/bin:$PATH
 
 RUN set -eux; \
 	apk add --no-cache \
